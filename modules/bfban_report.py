@@ -19,6 +19,7 @@ from apps.bfban.interface import AbstractQueryClient, PlayerNotFoundException
 from apps.bfban.report_step import (ImageStepWaiter, BasicStepWaiter, SelectStepWaiter, Steps,
                                     WaiterResult, CollectStepWaiter, report_sessions, ReportContex, CaptchaStepWaiter)
 import contextlib
+from loguru import logger
 
 saya = Saya.current()
 channel = Channel.current()
@@ -81,12 +82,31 @@ async def on_report(app: Ariadne, contact: Group, sender: Member, source: Source
         await response_handle(Steps.FAILED, "请输入正确的游戏ID，不需要输入战队名", app, contact, source, ea_id)
         return
 
+    await app.send_message(contact, f'正在获取ID"{ea_id}"的信息喵', quote=source)
+
     query_client: AbstractQueryClient = QueryClient()
     try:
         pid = await query_client.query_player_pid(ea_id)
     except PlayerNotFoundException:
         await response_handle(Steps.FAILED, "此ID不存在，请确认此玩家最新的游戏ID", app, contact, source, ea_id)
         return
+
+    try:
+        bfban_status = await asyncio.wait_for(query_client.query_player_bfban_stats(pid), 10)
+        if bfban_status not in ("查询失败", "未被举报"):
+            bfban_case = f"案件链接： https://bfban.gametools.network/player/{pid} "
+            if bfban_status in ("石锤", "即将石锤"):
+                await response_handle(Steps.FAILED,
+                                      f'此玩家"{ea_id}"当前状态为"{bfban_status}"\n{bfban_case}\n感谢你对游戏做出的贡献',
+                                      app, contact, source, ea_id)
+            else:
+                await response_handle(Steps.CONTINUE,
+                                      f'此玩家"{ea_id}"当前状态为"{bfban_status}"\n{bfban_case}\n若要补充证据请按照提示继续举报',
+                                      app, contact, source, ea_id)
+
+
+    except BaseException as e:
+        logger.exception(e)
 
     async with report_sessions.lock:
         if ea_id in report_sessions:
