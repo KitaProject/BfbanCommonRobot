@@ -3,10 +3,11 @@
 
 <div align="center">
 <p>A QQ robot based on Ariadne for the battlefield anti-cheat website BFBAN.</p>
-![Python Version](https://img.shields.io/badge/python-v3.11-blue)
+  
+Python Version:<br>
+![Python Version](https://img.shields.io/badge/python-v3.11-blue) 
+  
 </div>
-
-
 
 ---
 
