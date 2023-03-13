@@ -67,7 +67,10 @@ class ReportContex:
 
         body = "<br>".join(self.description_list)
 
-        img = "".join(self.description_img_list)
+        img = ""
+
+        for item in self.description_img_list:
+            img = img + f'<img src="{item}">'
 
         return f"{head}{stats}<br>以下为玩家提供的举报信息：<br><br>{body}{img}"
 
