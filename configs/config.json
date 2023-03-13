@@ -1,0 +1,22 @@
+{
+  "account": {
+    "qq_id": 1234,
+    "admin_qq_ids": [
+      12345
+    ],
+    "verifyKey": "",
+    "mirai_host": "localhost:8080"
+  },
+  "plugins": {
+    "server_list": {
+      "data_source_host": ""
+    },
+    "bfban": {
+      "bfban_host": "https://bfban.gametools.network",
+      "date_source_host": "",
+      "bfban_token": "",
+      "image_host_auth": ""
+    }
+  },
+  "version": "0.1.1-dev"
+}
