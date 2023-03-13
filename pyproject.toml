@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["siloneko <siloneko@outlook.com>"]
 readme = "README.md"
-packages = [{include = "bfv_helper"}]
+packages = [{include = "BfbanCommonRobot"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -21,7 +21,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [[tool.poetry.source]]
-# 这里以清华源举例，你也可以使用其他源
 name = "tuna-tsinghua"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = false
