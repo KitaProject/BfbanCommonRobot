@@ -286,6 +286,15 @@ class CollectStepWaiter(BasicStepWaiter):
             return WaiterResult(Steps.RETRY, rf"不支持的消息类型，请发送举报的文字信息", None, source)
 
         reasons = str(message)
+
+        if len(reasons) < 14:
+            return WaiterResult(Steps.RETRY,
+                                rf"图床可能会失效，不要只依靠图片描述举报信息。若涉及具体对局请至 https://battlefieldtracker.com" +
+                                rf"/{self.report_ctx.game_type}/profile" +
+                                rf"/origin/{self.report_ctx.target_player_ea_id}/gamereports " +
+                                rf"查询游戏战报后附加在举报内容中",
+                                None, source)
+
         reasons = list(map(lambda x: f"<p>{x}</p>", reasons.split("\n")))
 
         self.report_ctx.description_list.extend(reasons)
