@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "bfv-helper"
+version = "0.1.0"
+description = ""
+authors = ["siloneko <siloneko@outlook.com>"]
+readme = "README.md"
+packages = [{include = "bfv_helper"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+graia-ariadne = {extras = ["standard"], version = "^0.10.3"}
+pillow = "^9.4.0"
+numpy = "^1.24.2"
+humps = "^0.2.2"
+aiofiles = "^23.1.0"
+cairosvg = "^2.6.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+# 这里以清华源举例，你也可以使用其他源
+name = "tuna-tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = false
