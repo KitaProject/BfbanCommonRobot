@@ -346,7 +346,7 @@ class CaptchaStepWaiter(BasicStepWaiter):
                                     f'举报"{self.report_ctx.target_player_ea_id}"成功\n' +
                                     f'案件链接：https://bfban.gametools.network/player/{self.report_ctx.target_pid}\n' +
                                     f'感谢你对游戏做出的贡献喵\n' +
-                                    f'存在问题请提交issues：https://github.com/KitaProject/BfbanCommentRobot/issues',
+                                    f'存在问题请提交issues：https://github.com/KitaProject/BfbanCommonRobot/issues',
                                     None, source)
             case "captcha.wrong":
                 return WaiterResult(Steps.RETRY, ['验证码输入错误，请重新输入', self.report_ctx.captcha_img], None,
