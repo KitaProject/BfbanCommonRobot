@@ -31,8 +31,8 @@ Python Version of requirement:
     "admin_qq_ids": [
       12345
     ],
-    "verifyKey": "Mirai-HTTP-Adapter秘钥",
-    "mirai_host": "Mirai-HTTP-Adapter监听地址"
+    "verifyKey": "Mirai-Api-Http秘钥",
+    "mirai_host": "Mirai-Api-Http监听地址"
   },
   "plugins": {
     "server_list": {
