@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "bfv-helper"
-version = "0.1.0"
+name = "BfbanCommonRobot"
+version = "0.1.1"
 description = ""
 authors = ["siloneko <siloneko@outlook.com>"]
 readme = "README.md"
