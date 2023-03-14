@@ -4,7 +4,9 @@
 <div align="center">
 
 A QQ robot based on [Ariadne](https://github.com/GraiaProject/Ariadne) for the battlefield anti-cheat website [BFBAN](https://bfban.gametools.network).
-  
+
+一款基于 [Ariadne](https://github.com/GraiaProject/Ariadne) 的QQ机器人，用于Battlefield 系列游戏反作弊网站 [BFBAN](https://bfban.gametools.network).
+
 Python Version of requirement:
 ![Python Version](https://img.shields.io/badge/python-v3.11-blue) 
 
