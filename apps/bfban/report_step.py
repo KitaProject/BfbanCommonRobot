@@ -60,7 +60,7 @@ class ReportContex:
     @property
     def description(self) -> str:
         head = f"<p>This report comes from common robots (source group: " + \
-               f"{str(self.contact_id)[:4]} {'*' * (len(str(self.contact_id)) - 4)}" + \
+               f"{str(self.contact_id)[:4]}{'*' * (len(str(self.contact_id)) - 4)}" + \
                f"at: {time.strftime('%Y-%m-%d %H:%M')})</p><br>BOT共获取到以下玩家数据信息：<br><br>"
 
         stats = "获取失败" if self.target_info is None else self.target_info.get_stats_info()
