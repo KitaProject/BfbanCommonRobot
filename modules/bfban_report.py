@@ -74,7 +74,7 @@ async def on_report(app: Ariadne, contact: Group, sender: Member, source: Source
             yield ret_code, ret_res
 
         except asyncio.TimeoutError:
-            await app.send_message(contact, f"{Steps.CANCEL}\n举报会话已超时，请重新发起举报", quote=source)
+            await response_handle(Steps.CANCEL, "举报会话已超时，请重新发起举报", app, contact, source, ea_id)
             raise ExecutionStop
 
     if not re.match(r"[a-zA-Z\-_\d]{4,32}", ea_id):
