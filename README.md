@@ -18,7 +18,7 @@ Python Version of requirement:
 
 ## 安装与运行
 
-1. `git clone git@github.com:KitaProject/BfbanCommonRobot.git` 或 Download ZIP
+1. `git clone https://github.com/KitaProject/BfbanCommonRobot.git` 或 Download ZIP
 
 2. `pip install -r ./requirements.txt` 或 `poetry install`
 
