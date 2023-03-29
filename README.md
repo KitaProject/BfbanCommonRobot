@@ -43,11 +43,13 @@ Python Version of requirement:
     "bfban": {
       "bfban_host": "https://bfban.gametools.network",
       "date_source_host": "数据源地址",
+      "captcha_host": "验证码图床",
+      "captcha_host_auth": "图床Token",
       "bfban_token": "BFBAN账号Token（暂未实现）",
       "image_host_auth": "sm.ms图床AuthToken"
     }
   },
-  "version": "0.1.1-dev"
+  "version": "0.1.2-dev"
 }
 ```
 
