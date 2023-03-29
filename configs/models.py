@@ -7,6 +7,8 @@ class ServerListConfig(BaseModel):
 
 class BfbanConfig(BaseModel):
     bfban_host: str | None = "https://bfban.gametools.network"
+    captcha_host: str | None = None
+    captcha_host_auth: str | None = None
     date_source_host: str
     bfban_token: str | None
     image_host_auth: str
