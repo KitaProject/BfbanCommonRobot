@@ -4,6 +4,7 @@ import random
 import re
 import time
 from asyncio import Task
+from base64 import b64encode
 from enum import StrEnum
 from typing import Coroutine, ClassVar
 
@@ -55,6 +56,7 @@ class ReportContex:
         self.game_type: str | None = None
         self.captcha_encrypt: str | None = None
         self.captcha: str | None = None
+        self.captcha_url: str | None = None
         self.captcha_img: Image | None = None
 
     @property
@@ -313,12 +315,17 @@ class CollectStepWaiter(BasicStepWaiter):
         bio = await asyncio.to_thread(svg.str_svg_2_png, svg_data)
 
         img = Image(data_bytes=bio.getvalue())
+        base64_str = b64encode(bio.getvalue()).decode("ascii")
+
+        self._task = asyncio.create_task(self.upload_captcha_img_task(base64_str, group, source))
+
         self.report_ctx.captcha_img = img
         return WaiterResult(Steps.CONTINUE, MessageChain([Plain("请输入验证码以提交举报\n"), img]),
                             str(message), source)
 
     def __init__(self, app: Ariadne, group: Group | int, member: Member | int, report_ctx: ReportContex):
         super().__init__(app, group, member, report_ctx)
+        self._task = None
 
     async def get_captcha_svg_data(self) -> str:
         from graia.ariadne import Ariadne
@@ -328,6 +335,32 @@ class CollectStepWaiter(BasicStepWaiter):
             res = await response.json()
             self.report_ctx.captcha_encrypt = res["data"]["hash"]
             return res["data"]["content"]
+
+    async def upload_captcha_img_task(self, img_base64: str, contact, source):
+        try:
+            if bot_config.plugins.bfban.captcha_host is not None:
+                self.report_ctx.captcha_url = await self.upload_captcha_img(img_base64)
+        except BaseException as e:
+            logger.exception(e)
+
+        if self.report_ctx.captcha_url is not None:
+            await self.app.send_message(contact,
+                                        [f"若验证码发送失败请手动查看验证码图片:\n{self.report_ctx.captcha_url}"],
+                                        quote=source)
+
+    async def upload_captcha_img(self, img_b64: str) -> str:
+        captcha_id = str(abs(hash(img_b64)))
+        from graia.ariadne import Ariadne
+        async with Ariadne.service.client_session.post(url=f"{bot_config.plugins.bfban.captcha_host}",
+                                                       params={"captcha_id": captcha_id},
+                                                       json={
+                                                           "auth": f"{bot_config.plugins.bfban.captcha_host_auth}",
+                                                           "captcha_code": f"{img_b64}"
+                                                       }) as response:
+            res = await response.json()
+            if res["result"] != "ok":
+                raise ImageException("验证码上传失败")
+            return f"{bot_config.plugins.bfban.captcha_host}/?captcha_id={captcha_id}"
 
 
 class CaptchaStepWaiter(BasicStepWaiter):
@@ -356,10 +389,10 @@ class CaptchaStepWaiter(BasicStepWaiter):
             case "report.success":
                 return WaiterResult(Steps.SUCCEED,
                                     f'举报"{self.report_ctx.target_player_ea_id}"成功\n' +
-                                    f'案件链接：https://bfban.gametools.network/player/{self.report_ctx.target_pid}\n' +
-                                    f'感谢你对游戏做出的贡献喵\n' +
-                                    f'存在问题请提交issues：https://github.com/KitaProject/BfbanCommonRobot/issues',
-                                    None, source)
+                                    # f'案件链接：https://bfban.gametools.network/player/{self.report_ctx.target_pid}\n' +
+                                    f'感谢你对游戏做出的贡献喵\n'
+                                    # + f'存在问题请提交issues：https://github.com/KitaProject/BfbanCommonRobot/issues'
+                                    , None, source)
             case "captcha.wrong":
                 return WaiterResult(Steps.RETRY, ['验证码输入错误，请重新输入', self.report_ctx.captcha_img], None,
                                     source)
