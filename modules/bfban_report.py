@@ -5,9 +5,9 @@ from typing import Sequence
 from creart import create
 from graia.amnesia.message import MessageChain
 from graia.ariadne import Ariadne
-from graia.ariadne.event.message import GroupMessage, ActiveGroupMessage
+from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message import Source
-from graia.ariadne.message.element import Plain, Image, File
+from graia.ariadne.message.element import Plain
 from graia.ariadne.message.parser.twilight import Twilight, UnionMatch, SpacePolicy, ParamMatch, RegexResult
 from graia.ariadne.model import Group, Member
 from graia.broadcast import ExecutionStop
