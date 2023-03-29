@@ -5,9 +5,9 @@ from typing import Sequence
 from creart import create
 from graia.amnesia.message import MessageChain
 from graia.ariadne import Ariadne
-from graia.ariadne.event.message import GroupMessage
+from graia.ariadne.event.message import GroupMessage, ActiveGroupMessage
 from graia.ariadne.message import Source
-from graia.ariadne.message.element import Plain
+from graia.ariadne.message.element import Plain, Image, File
 from graia.ariadne.message.parser.twilight import Twilight, UnionMatch, SpacePolicy, ParamMatch, RegexResult
 from graia.ariadne.model import Group, Member
 from graia.broadcast import ExecutionStop
@@ -65,7 +65,7 @@ async def on_report(app: Ariadne, contact: Group, sender: Member, source: Source
     @contextlib.asynccontextmanager
     async def step_waiter_ctx_manager(basic_waiter: type[BasicStepWaiter], ctx: ReportContex):
         try:
-            waiter_result: WaiterResult = await inc.wait(basic_waiter(app, contact.id, sender.id, ctx), timeout=90)
+            waiter_result: WaiterResult = await inc.wait(basic_waiter(app, contact.id, sender.id, ctx), timeout=150)
             ret_code = waiter_result.code
             ret_content = waiter_result.content
             ret_res = waiter_result.data
@@ -90,22 +90,24 @@ async def on_report(app: Ariadne, contact: Group, sender: Member, source: Source
         await response_handle(Steps.FAILED, "此ID不存在，请确认此玩家最新的游戏ID", app, contact, source, ea_id)
         return
 
-    bfban_status: str | None = None
+    bfban_status: str | None = "查询超时"
+
     try:
-        bfban_status = await asyncio.wait_for(query_client.query_player_bfban_stats(pid), 10)
+        bfban_status = await asyncio.wait_for(query_client.query_player_bfban_stats(pid), 7)
     except BaseException as e:
-        logger.exception(e)
-         
+        logger.exception("bfban状态获取失败", e)
+
     if bfban_status is not None:
-        if bfban_status not in ("查询失败", "未被举报"):
-            bfban_case = f"案件链接： https://bfban.gametools.network/player/{pid} "
+        if bfban_status not in ("查询失败", "未被举报", "查询超时"):
+            # bfban_case = f"链接： https://bfban.gametools.network/player/{pid} "
+            bfban_case = f" "
             if bfban_status in ("石锤", "即将石锤"):
                 await response_handle(Steps.FAILED,
                                       f'此玩家"{ea_id}"当前状态为"{bfban_status}"\n{bfban_case}\n感谢你对游戏做出的贡献',
                                       app, contact, source, ea_id)
             else:
                 await response_handle(Steps.CONTINUE,
-                                      f'此玩家"{ea_id}"当前状态为"{bfban_status}"\n{bfban_case}\n若要补充证据请按照提示继续举报',
+                                      f'此玩家"{ea_id}"当前状态为"{bfban_status}"\n{bfban_case}\n若要补充证据请按照提示继续',
                                       app, contact, source, ea_id)
 
     async with report_sessions.lock:
