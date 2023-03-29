@@ -14,8 +14,8 @@
     "bfban": {
       "bfban_host": "https://bfban.gametools.network",
       "date_source_host": "",
-      "captcha_host": "https://captcha.siloneko.shop",
-      "captcha_host_auth": "bfban-captcha_auth",
+      "captcha_host": "",
+      "captcha_host_auth": "",
       "bfban_token": "",
       "image_host_auth": ""
     }
