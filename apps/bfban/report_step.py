@@ -345,7 +345,7 @@ class CollectStepWaiter(BasicStepWaiter):
 
         if self.report_ctx.captcha_url is not None:
             await self.app.send_message(contact,
-                                        [f"若验证码发送失败请手动查看验证码图片:\n{self.report_ctx.captcha_url}"],
+                                        [f"若图片发送失败请手动查看验证码:\n{self.report_ctx.captcha_url}"],
                                         quote=source)
 
     async def upload_captcha_img(self, img_b64: str) -> str:
@@ -389,9 +389,9 @@ class CaptchaStepWaiter(BasicStepWaiter):
             case "report.success":
                 return WaiterResult(Steps.SUCCEED,
                                     f'举报"{self.report_ctx.target_player_ea_id}"成功\n' +
-                                    # f'案件链接：https://bfban.gametools.network/player/{self.report_ctx.target_pid}\n' +
+                                    f'案件链接：https://bfban.gametools.network/player/{self.report_ctx.target_pid}\n' +
                                     f'感谢你对游戏做出的贡献喵\n'
-                                    # + f'存在问题请提交issues：https://github.com/KitaProject/BfbanCommonRobot/issues'
+                                    + f'存在问题请提交issues：https://github.com/KitaProject/BfbanCommonRobot/issues'
                                     , None, source)
             case "captcha.wrong":
                 return WaiterResult(Steps.RETRY, ['验证码输入错误，请重新输入', self.report_ctx.captcha_img], None,
