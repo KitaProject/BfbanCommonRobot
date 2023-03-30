@@ -218,10 +218,6 @@ class BasicStepWaiter(Waiter, ABC):
 class SelectStepWaiter(BasicStepWaiter):
 
     async def on_event_detected(self, group: Group, member: Member, message: MessageChain, source: Source):
-        try:
-            self.check_cancel(message)
-        except ReportCancel:
-            return WaiterResult(Steps.CANCEL, None, None, source)
 
         match str(message).lower():
             case "1" | "一" | "战地1" | "战地一" | "bf1":
@@ -250,16 +246,12 @@ class SelectStepWaiter(BasicStepWaiter):
 class ImageStepWaiter(BasicStepWaiter):
 
     async def on_event_detected(self, group: Group, member: Member, message: MessageChain, source: Source):
-        try:
-            self.check_cancel(message)
-        except ReportCancel:
-            return WaiterResult(Steps.CANCEL, None, None, source)
 
         if str(message) == "无":
             return WaiterResult(Steps.CONTINUE, f"跳过了图片上传", None, source)
 
         if Image not in message:
-            return WaiterResult(Steps.RETRY, rf"请发送图片消息，回复\"无\"以跳过上传，回复\"取消\"放弃", None, source)
+            return WaiterResult(Steps.RETRY, f"请发送图片消息，回复\"无\"以跳过上传，回复\"取消\"放弃", None, source)
         else:
             await self.app.send_message(group, [f"正在上传图片"], quote=source)
             image: Image = message.get(Image)[0]
@@ -282,19 +274,16 @@ class ImageStepWaiter(BasicStepWaiter):
 class CollectStepWaiter(BasicStepWaiter):
 
     async def on_event_detected(self, group: Group, member: Member, message: MessageChain, source: Source):
-        try:
-            self.check_cancel(message)
-        except ReportCancel:
-            return WaiterResult(Steps.CANCEL, None, None, source)
 
         if MultimediaElement in message:
             return WaiterResult(Steps.RETRY, rf"不支持的消息类型，请发送举报的文字信息", None, source)
 
         reasons = str(message)
 
-        if len(reasons) < 14:
+        if len(reasons) < 12:
             return WaiterResult(Steps.RETRY,
-                                rf"图床可能会失效，不要只依靠图片描述举报信息。若涉及具体对局请至 https://battlefieldtracker.com" +
+                                rf"请输入更详细的举报信息，图片可能会失效，所以请不要只依靠图片来描述举报信息。" +
+                                rf"如若涉及具体的对局请至 https://battlefieldtracker.com" +
                                 rf"/{self.report_ctx.game_type}/profile" +
                                 rf"/origin/{self.report_ctx.target_player_ea_id}/gamereports " +
                                 rf"查询游戏战报后附加在举报内容中",
@@ -310,7 +299,11 @@ class CollectStepWaiter(BasicStepWaiter):
             svg_data = await self.get_captcha_svg_data()
         except BaseException as e:
             logger.exception(e)
-            return WaiterResult(Steps.ERROR, rf"验证码获取失败", None, source)
+            try:
+                svg_data = await self.get_captcha_svg_data()
+            except BaseException as e:
+                logger.exception(e)
+                return WaiterResult(Steps.ERROR, rf"验证码获取失败", None, source)
 
         bio = await asyncio.to_thread(svg.str_svg_2_png, svg_data)
 
@@ -345,7 +338,7 @@ class CollectStepWaiter(BasicStepWaiter):
 
         if self.report_ctx.captcha_url is not None:
             await self.app.send_message(contact,
-                                        [f"若图片发送失败请手动查看验证码:\n{self.report_ctx.captcha_url}"],
+                                        [f"若验证码图片发送失败请手动查看:\n{self.report_ctx.captcha_url}"],
                                         quote=source)
 
     async def upload_captcha_img(self, img_b64: str) -> str:
@@ -366,10 +359,6 @@ class CollectStepWaiter(BasicStepWaiter):
 class CaptchaStepWaiter(BasicStepWaiter):
 
     async def on_event_detected(self, group: Group, member: Member, message: MessageChain, source: Source):
-        try:
-            self.check_cancel(message)
-        except ReportCancel:
-            return WaiterResult(Steps.CANCEL, None, None, source)
 
         if MultimediaElement in message:
             return WaiterResult(Steps.RETRY, rf"不支持的消息类型，请输入验证码", None, source)
