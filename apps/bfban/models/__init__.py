@@ -26,7 +26,7 @@ class WeaponStatus(CamelModel):
     hit_per_kills: float
 
     def __str__(self):
-        return f"{self.weapon_name} 种类: {self.weapon_type} 击杀数: {self.kills} KPM: {self.kpm} 准确度: {self.acc}% 爆头率: {self.acc}% 效率: {self.hit_per_kills}"
+        return f"{self.weapon_name} 种类: {self.weapon_type} 击杀数: {self.kills} KPM: {self.kpm} 准确度: {self.acc}% 爆头率: {self.head_shots_kill_ratio}% 效率: {self.hit_per_kills}"
 
 
 class VehicleModel(CamelModel):
