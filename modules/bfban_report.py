@@ -36,27 +36,39 @@ async def response_handle(ret_code, ret_content, app: Ariadne, contact: Group, s
         ret_content = []
     if not (isinstance(ret_content, Sequence) or isinstance(ret_content, MessageChain)):
         ret_content = list(ret_content)
-    match ret_code:
-        case Steps.CANCEL:
-            await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n你取消了对\"{ea_id}\"的举报")]).extend(
-                ret_content), quote=source)
-            report_sessions.remove(ea_id)
-            raise ExecutionStop
-        case Steps.FAILED:
-            await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content), quote=source)
-            report_sessions.remove(ea_id)
-            raise ExecutionStop
-        case Steps.ERROR:
-            await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content), quote=source)
-            report_sessions.remove(ea_id)
-            raise ExecutionStop
-        case Steps.RETRY:
-            await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content), quote=source)
-        case Steps.CONTINUE:
-            await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content), quote=source)
-        case Steps.SUCCEED:
-            await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content), quote=source)
-            report_sessions.remove(ea_id)
+    try:
+        match ret_code:
+            case Steps.CANCEL:
+                await app.send_message(contact,
+                                       MessageChain([Plain(f"{ret_code}\n你取消了对\"{ea_id}\"的举报")]).extend(
+                                           ret_content), quote=source)
+                report_sessions.remove(ea_id)
+                raise ExecutionStop
+            case Steps.FAILED:
+                await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content),
+                                       quote=source)
+                report_sessions.remove(ea_id)
+                raise ExecutionStop
+            case Steps.ERROR:
+                await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content),
+                                       quote=source)
+                report_sessions.remove(ea_id)
+                raise ExecutionStop
+            case Steps.RETRY:
+                await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content),
+                                       quote=source)
+            case Steps.CONTINUE:
+                await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content),
+                                       quote=source)
+            case Steps.SUCCEED:
+                await app.send_message(contact, MessageChain([Plain(f"{ret_code}\n")]).extend(ret_content),
+                                       quote=source)
+                report_sessions.remove(ea_id)
+    except RemoteException as exception:
+        logger.exception(exception)
+        await app.send_message(contact, MessageChain([Plain(f"{Steps.ERROR}\n此消息发送失败，请注意检查客户端日志")]),
+                               quote=source)
+
 
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage], inline_dispatchers=[command_rule]))
@@ -77,9 +89,6 @@ async def on_report(app: Ariadne, contact: Group, sender: Member, source: Source
         except asyncio.TimeoutError:
             await response_handle(Steps.CANCEL, "举报会话已超时，请重新发起举报", app, contact, source, ea_id)
             raise ExecutionStop
-        except RemoteException as exception:
-            logger.exception(exception)
-            yield Steps.CONTINUE, "验证码上传失败，请手动查看验证码链接"
 
     if not re.match(r"[a-zA-Z\-_\d]{4,32}", ea_id):
         await response_handle(Steps.FAILED, "请输入正确的游戏ID，不需要输入战队名", app, contact, source, ea_id)
