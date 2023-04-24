@@ -6,6 +6,7 @@ from creart import create
 from graia.amnesia.message import MessageChain
 from graia.ariadne import Ariadne
 from graia.ariadne.event.message import GroupMessage
+from graia.ariadne.exception import RemoteException
 from graia.ariadne.message import Source
 from graia.ariadne.message.element import Plain
 from graia.ariadne.message.parser.twilight import Twilight, UnionMatch, SpacePolicy, ParamMatch, RegexResult
@@ -76,6 +77,8 @@ async def on_report(app: Ariadne, contact: Group, sender: Member, source: Source
         except asyncio.TimeoutError:
             await response_handle(Steps.CANCEL, "举报会话已超时，请重新发起举报", app, contact, source, ea_id)
             raise ExecutionStop
+        except RemoteException as exception:
+            logger.exception(exception)
 
     if not re.match(r"[a-zA-Z\-_\d]{4,32}", ea_id):
         await response_handle(Steps.FAILED, "请输入正确的游戏ID，不需要输入战队名", app, contact, source, ea_id)
