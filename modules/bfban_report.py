@@ -79,6 +79,7 @@ async def on_report(app: Ariadne, contact: Group, sender: Member, source: Source
             raise ExecutionStop
         except RemoteException as exception:
             logger.exception(exception)
+            yield Steps.CONTINUE, "验证码上传失败，请手动查看验证码链接"
 
     if not re.match(r"[a-zA-Z\-_\d]{4,32}", ea_id):
         await response_handle(Steps.FAILED, "请输入正确的游戏ID，不需要输入战队名", app, contact, source, ea_id)
