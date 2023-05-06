@@ -12,7 +12,7 @@
       "data_source_host": ""
     },
     "bfban": {
-      "bfban_host": "https://bfban.gametools.network",
+      "bfban_host": "https://bfban.com",
       "date_source_host": "",
       "captcha_host": "",
       "captcha_host_auth": "",

@@ -378,7 +378,7 @@ class CaptchaStepWaiter(BasicStepWaiter):
             case "report.success":
                 return WaiterResult(Steps.SUCCEED,
                                     f'举报"{self.report_ctx.target_player_ea_id}"成功\n' +
-                                    f'案件链接：https://bfban.gametools.network/player/{self.report_ctx.target_pid}\n' +
+                                    f'案件链接：https://bfban.com/player/{self.report_ctx.target_pid}\n' +
                                     f'感谢你对游戏做出的贡献喵\n'
                                     + f'存在问题请提交issues：https://github.com/KitaProject/BfbanCommonRobot/issues'
                                     , None, source)
