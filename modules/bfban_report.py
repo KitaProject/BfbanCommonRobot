@@ -112,7 +112,7 @@ async def on_report(app: Ariadne, contact: Group, sender: Member, source: Source
 
     if bfban_status is not None:
         if bfban_status not in ("查询失败", "未被举报", "查询超时"):
-            bfban_case = f"链接： https://bfban.gametools.network/player/{pid} "
+            bfban_case = f"链接： https://bfban.com/player/{pid} "
             # bfban_case = f" "
             if bfban_status in ("石锤", "即将石锤"):
                 await response_handle(Steps.FAILED,
