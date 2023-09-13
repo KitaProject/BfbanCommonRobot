@@ -35,6 +35,7 @@ class AbstractQueryClient(ABC):
         6: "即将石锤",
         7: "查询失败",
         8: "刷枪",
+        9: "申诉中"
     }
 
     @abstractmethod
