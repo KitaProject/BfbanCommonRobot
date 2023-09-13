@@ -91,6 +91,7 @@ class ReportContex:
                 "videoLink": "",
                 "description": f"{self.description}"
             },
+            "SKIP_CAPTCHA": true,
             "encryptCaptcha": f"{self.captcha_encrypt}",
             "captcha": f"{self.captcha}"
         }
